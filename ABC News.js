@@ -35,10 +35,14 @@
 	***** END LICENSE BLOCK *****
 */
 
+// text() v2 TODO: see if this method can be pulled out to common location as it is used by a lot of files.
+function text(docOrElem, selector, index) {
+	var elem = index ? docOrElem.querySelectorAll(selector).item(index) : docOrElem.querySelector(selector); return elem ? elem.textContent : null;
+}
 
+// eslint-disable-next-line consistent-return, no-unused-vars
 function detectWeb(doc, url) {
-	if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="CMChannel"]/@content')>-1 
-	        && getSearchResults(doc, true)) {
+	if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="CMChannel"]/@content') > -1 && getSearchResults(doc, true)) {
 		return 'multiple';
 	}
 	else if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="ABCVideo"]/@content')) {
@@ -46,14 +50,15 @@ function detectWeb(doc, url) {
 	}
 	else if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="Article"]/@content')) {
 		return 'newspaperArticle';
-}}
+	}
+}
 
 
 function getSearchResults(doc, checkOnly) {
 	var items = {};
 	var found = false;
 	var rows = doc.querySelectorAll('h3 a');
-	for (var i=0; i<rows.length; i++) {
+	for (var i = 0; i < rows.length; i++) {
 		var href = rows[i].href;
 		var title = ZU.trimInternal(rows[i].textContent);
 		if (!href || !title) continue;
@@ -67,6 +72,7 @@ function getSearchResults(doc, checkOnly) {
 
 function doWeb(doc, url) {
 	if (detectWeb(doc, url) == "multiple") {
+		// eslint-disable-next-line consistent-return
 		Zotero.selectItems(getSearchResults(doc, false), function (items) {
 			if (!items) {
 				return true;
@@ -77,7 +83,8 @@ function doWeb(doc, url) {
 			}
 			ZU.processDocuments(articles, scrape);
 		});
-	} else {
+	}
+	else {
 		scrape(doc, url);
 	}
 }
@@ -86,7 +93,7 @@ function scrape(doc, url) {
 	var translator = Zotero.loadTranslator('web');
 	// Embedded Metadata
 	translator.setTranslator('951c027d-74ac-47d4-a107-9c3069ab7b48');
-	//translator.setDocument(doc);
+	// translator.setDocument(doc);
 	
 	translator.setHandler('itemDone', function (obj, item) {
 		item.language = "en-AU";
@@ -95,10 +102,10 @@ function scrape(doc, url) {
 		if (canonical) {
 			item.url = canonical.href;
 		}
-			item.publicationTitle = "ABC News";
-			item.language = "en-AU";
-		//authors are either listed as meta properties article"author" or as CSS, used CSS here	
-		var authors = text(doc, '*[class^="_1SzQc"]'); 
+		item.publicationTitle = "ABC News";
+		item.language = "en-AU";
+		// authors are either listed as meta properties article"author" or as CSS, used CSS here
+		var authors = text(doc, '*[class^="_1SzQc"]');
 		if (authors && item.creators.length <= 1) {
 			authors = authors.replace(/^By /, '');
 			if (authors == authors.toUpperCase()) { // convert to title case if all caps
@@ -108,14 +115,16 @@ function scrape(doc, url) {
 			var authorsList = authors.split(/,|\band\b/);
 			for (let i = 0; i < authorsList.length; i++) {
 				item.creators.push(ZU.cleanAuthor(authorsList[i], "author"));
-			}}
-			item.complete();
+			}
+		}
+		item.complete();
 	});
 
-	translator.getTranslatorObject(function(trans) {
+	translator.getTranslatorObject(function (trans) {
 		trans.doWeb(doc, url);
 	});
 }
+
 /** BEGIN TEST CASES **/
 var testCases = [
 	{
