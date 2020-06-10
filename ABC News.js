@@ -35,6 +35,10 @@
 	***** END LICENSE BLOCK *****
 */
 
+// text() v2 TODO: see if this method can be pulled out to common location as it is used by a lot of files.
+function text(docOrElem, selector, index) {
+	var elem = index ? docOrElem.querySelectorAll(selector).item(index) : docOrElem.querySelector(selector); return elem ? elem.textContent : null;
+}
 
 function detectWeb(doc, url) {
 	if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="CMChannel"]/@content') > -1
