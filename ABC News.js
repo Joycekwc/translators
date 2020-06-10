@@ -40,9 +40,9 @@ function text(docOrElem, selector, index) {
 	var elem = index ? docOrElem.querySelectorAll(selector).item(index) : docOrElem.querySelector(selector); return elem ? elem.textContent : null;
 }
 
+// eslint-disable-next-line consistent-return, no-unused-vars
 function detectWeb(doc, url) {
-	if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="CMChannel"]/@content') > -1
-	        && getSearchResults(doc, true)) {
+	if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="CMChannel"]/@content') > -1 && getSearchResults(doc, true)) {
 		return 'multiple';
 	}
 	else if (ZU.xpathText(doc, '//meta[@property="ABC.ContentType" and @content="ABCVideo"]/@content')) {
@@ -72,6 +72,7 @@ function getSearchResults(doc, checkOnly) {
 
 function doWeb(doc, url) {
 	if (detectWeb(doc, url) == "multiple") {
+		// eslint-disable-next-line consistent-return
 		Zotero.selectItems(getSearchResults(doc, false), function (items) {
 			if (!items) {
 				return true;
